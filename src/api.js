@@ -19,7 +19,6 @@ async function request(path, { method = "GET", token, body } = {}) {
 }
 
 // admin endpoints used by pages
-export const adminLogin = (username, password) => request("/admin/login", { method: "POST", body: { username, password } });
 export const fetchMedicines = (token) => request("/admin/medicines", { method: "GET", token });
 export const createMedicine = (payload, token) => request("/admin/create-medicine", { method: "POST", token, body: payload });
 export const deleteMedicine = (id, token) => request(`/admin/medicines/${id}`, { method: "DELETE", token });
