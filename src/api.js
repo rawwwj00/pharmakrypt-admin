@@ -30,3 +30,13 @@ export const deleteAlert = (id, token) => request(`/admin/alerts/${id}`, { metho
 export const fetchPharmacies = (token) => request("/admin/pharmacies", { method: "GET", token });
 export const createPharmacy = (payload, token) => request("/admin/create-pharmacy", { method: "POST", token, body: payload });
 export const deletePharmacy = (id, token) => request(`/admin/pharmacies/${id}`, { method: "DELETE", token });
+export async function adminLogin(username, password) {
+  const res = await fetch(`${API_BASE}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password })
+  });
+
+  if (!res.ok) throw new Error("Login failed");
+  return res.json();
+}
