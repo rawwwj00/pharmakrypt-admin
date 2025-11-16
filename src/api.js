@@ -1,41 +1,105 @@
-// API helper - uses VITE_API_BASE or defaults to localhost
-export const API_BASE = import.meta.env.VITE_API_BASE?.replace(/\/$/, "") || "http://localhost:4000/api";
+export const API_BASE =
+  import.meta.env.VITE_API_BASE?.replace(/\/$/, "") ||
+  "http://localhost:4000/api/admin";
 
-async function request(path, { method = "GET", token, body } = {}) {
-  const url = `${API_BASE}${path.startsWith("/") ? "" : "/"}${path}`;
-  const headers = { "Content-Type": "application/json" };
-  if (token) headers.Authorization = `Bearer ${token}`;
-
-  const res = await fetch(url, { method, headers, body: body ? JSON.stringify(body) : undefined });
-  const text = await res.text();
-  try {
-    const json = text ? JSON.parse(text) : {};
-    if (!res.ok) throw new Error(json.message || `HTTP ${res.status}`);
-    return json;
-  } catch (err) {
-    if (!res.ok) throw err;
-    return text;
-  }
-}
-
-// admin endpoints used by pages
-export const fetchMedicines = (token) => request("/admin/medicines", { method: "GET", token });
-export const createMedicine = (payload, token) => request("/admin/create-medicine", { method: "POST", token, body: payload });
-export const deleteMedicine = (id, token) => request(`/admin/medicines/${id}`, { method: "DELETE", token });
-
-export const fetchAlerts = (token) => request("/admin/alerts", { method: "GET", token });
-export const deleteAlert = (id, token) => request(`/admin/alerts/${id}`, { method: "DELETE", token });
-
-export const fetchPharmacies = (token) => request("/admin/pharmacies", { method: "GET", token });
-export const createPharmacy = (payload, token) => request("/admin/create-pharmacy", { method: "POST", token, body: payload });
-export const deletePharmacy = (id, token) => request(`/admin/pharmacies/${id}`, { method: "DELETE", token });
+/* --------------------------
+   ADMIN LOGIN
+-------------------------- */
 export async function adminLogin(username, password) {
   const res = await fetch(`${API_BASE}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password })
+    body: JSON.stringify({ username, password }),
   });
 
-  if (!res.ok) throw new Error("Login failed");
+  if (!res.ok) throw new Error("Invalid credentials");
   return res.json();
+}
+
+/* --------------------------
+   FETCH MEDICINES
+-------------------------- */
+export async function fetchMedicines(token) {
+  const res = await fetch(`${API_BASE}/medicines`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.json();
+}
+
+/* --------------------------
+   CREATE MEDICINE
+-------------------------- */
+export async function createMedicine(data, token) {
+  const res = await fetch(`${API_BASE}/create-medicine`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: data,
+  });
+  return res.json();
+}
+
+/* --------------------------
+   DELETE MEDICINE
+-------------------------- */
+export async function deleteMedicine(id, token) {
+  return fetch(`${API_BASE}/medicines/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+/* --------------------------
+   FETCH PHARMACIES
+-------------------------- */
+export async function fetchPharmacies(token) {
+  const res = await fetch(`${API_BASE}/pharmacies`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.json();
+}
+
+/* --------------------------
+   CREATE PHARMACY
+-------------------------- */
+export async function createPharmacy(data, token) {
+  const res = await fetch(`${API_BASE}/create-pharmacy`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: data,
+  });
+  return res.json();
+}
+
+/* --------------------------
+   DELETE PHARMACY
+-------------------------- */
+export async function deletePharmacy(id, token) {
+  return fetch(`${API_BASE}/pharmacies/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+/* --------------------------
+   FETCH ALERTS
+-------------------------- */
+export async function fetchAlerts(token) {
+  const res = await fetch(`${API_BASE}/alerts`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.json();
+}
+
+/* --------------------------
+   DELETE ALERT
+-------------------------- */
+export async function deleteAlert(id, token) {
+  return fetch(`${API_BASE}/alerts/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
 }
